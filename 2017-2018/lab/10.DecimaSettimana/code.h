@@ -2,7 +2,9 @@
 #define CODE_H
 
 struct nodo{
-	char info;
+	//char info;
+	//Servono char o int in base all'esercizio
+	int info;
 	nodo* next;
 	nodo(int a = 0, nodo * b = 0){
 		info = a;
@@ -26,8 +28,8 @@ struct coda
 	}
 };
 
-void push(char, coda&);
-char pop(coda&);
+void push(int, coda&);
+int pop(coda&);
 bool e_vuota(coda);
-
+nodo* build(nodo*);
 #endif

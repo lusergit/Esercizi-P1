@@ -18,41 +18,26 @@ nodo* ultimo(nodo* L){
     return L;
 }
 
-struct coda{
-    nodo* inizio;
-    nodo* fine;
-    coda(nodo* L){
-        if(L){
-            inizio = L;
-            fine = ultimo(L);
-        } else {
-            inizio = fine = 0;
-        }
-    }
-};
-
 //PRE = L lista ben formata e ordinata, x intero
 nodo* inserisci(nodo* L, int x){
     if(!L) return new nodo(x);
-    cout << "Arrivato qui, L = " << L << endl;
-    coda *Q = new coda(L);
-    if (x < Q->inizio->info){
-        nodo* tmp = Q->inizio;
-        Q->inizio = new nodo(x, tmp);
+    //cout << "Arrivato qui, L = " << L << endl;
+    //coda *Q = new coda(L);
+    if (x < L->info){
+        L = new nodo(x,L);
     }
-    else if (x > Q->fine->info){
-            Q->fine->next = new nodo(x);
-            Q->fine = Q->fine->next;
-    } else {
-       nodo* current = Q->inizio;
-        while(current->next->info < x)
-            current = current->next;
-        current->next = new nodo(x, current->next);
+    else{
+        if (x > ultimo(L)->info){
+            ultimo(L)->next = new nodo(x);
+        } else {
+            nodo* current = L;
+            while(current->next->info < x)
+                current = current->next;
+            current->next = new nodo(x, current->next);
+        }
     }
-    nodo* tmp = Q->inizio;
-    delete Q;
-    cout << tmp->info << endl;
-    return tmp;
+
+    return L;
 }
 //POST = restituisce lista formata dai nodi di L ai quali è stato aggiunto un nodo di campo info = x in modo da manternerla ordinata
 
@@ -70,6 +55,7 @@ void stampa(nodo* L){
     while(L){
         cout << L->info;
         if (L->next) cout << " -> ";
+        L=L->next;
     }
     cout << endl;
 }

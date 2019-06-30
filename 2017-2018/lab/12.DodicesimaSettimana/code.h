@@ -28,7 +28,7 @@ struct coda
 	}
 };
 
-void push(int, coda&);
+void push(nodo*, coda&);
 int pop(coda&);
 bool e_vuota(coda);
 nodo* build(nodo*);

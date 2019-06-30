@@ -20,12 +20,17 @@ bool e_vuota(coda Q){
 //POST = ritorna true sse Q è vuota
 
 //PRE = Coda Q ben formata, c definito
-void push(int c, coda& Q){
+void push(nodo* L, coda& Q){
 	if(e_vuota(Q)){
-		Q.inizio = Q.fine = new nodo(c);
+		if(L){
+			Q.inizio = L;
+			Q.fine = ultimo(L);
+		} else {
+			Q.inizio = Q.fine = L;
+		}
 	} else {
-		Q.fine->next = new nodo(c);
-		Q.fine = Q.fine->next;
+		Q.fine->next = L;
+		Q.fine = ultimo(Q.inizio);
 	}
 }
 //POST = aggiunge in fondo alla coda un nodo con campo info = c

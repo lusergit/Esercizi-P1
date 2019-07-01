@@ -50,6 +50,10 @@ int altezza(nodo* r){
 
 void stampa_a_salti(nodo* r, int k){
     elem *al = new elem[altezza(r)+1];
+    int top = 0;
+    if(r){
+        al[top] 
+    }
 }
 
 int main(){

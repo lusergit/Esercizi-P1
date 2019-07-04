@@ -1,0 +1,27 @@
+INPUT:
+8
+2
+3
+5
+3
+2
+4
+5
+2
+
+output:
+Lista costruita
+2 3 5 3 2 4 5 2 
+Liste uniformi:
+2 2 2 
+
+3 3 
+
+4 
+
+5 5 
+
+
+Lista ordinata
+2 2 2 3 3 4 5 5 
+end

@@ -1,0 +1,7 @@
+#vsCode related
+.ipch/
+.ipch
+.vscode/
+
+# exes
+**/a.out

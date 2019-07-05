@@ -46,76 +46,13 @@ void stampaD(nodoD*L)
     cout<<endl;
 }
  
-nodo* conc(nodo*L1, nodo*L2)
-{
-  if(!L1) return L2;
-  if(!L2) return L1;
-  nodo* x=L1;
-  while(x->next)
-    x=x->next;
-  x->next=L2;
-  return L1;
-}
- 
 nodo* concric(nodo* L1, nodo* L2){
     if(!L1) return L2;
     if(!L2) return L1;
     L1->next = concric(L1->next,L2);
     return L1;
 }
-            //* METODO DEL PROF *//
-/*nodo* taglia(nodo*&L, int n){
-    if(!L || !n) return 0;
-    nodo* inizio=L;
-    while(n>1 && inizio->next){
-        inizio=inizio->next;
-        n=n-1;
-    }
-    if(!inizio->next){
-        nodo*x=L;
-        L=0;
-        return x;
-    }
-    else{
-        nodo*x=inizio->next;
-        inizio->next=0;
-        nodo*y=L;
-        L=x;
-        return y;
-    }
-}*/
- 
-nodo* taglia(nodo*&L, int n){ //iterattiva 
-    if(!L || !n) return 0;
-    nodo* d = 0;
-    while(n>0 && L){
-        nodo* c = L;
-        L = L->next;
-        c->next = 0;
-        d = conc(d,c);
-        n--;
-    }
-    return d;
-}
-            //* METODO DEL PROF *//
-/*nodo* tagliaric(nodo*& L, int n){ 
-    if(!L || !n) return 0;
-    if(n==1){
-        nodo*x=L;
-        L=L->next;
-        x->next=0;
-        return x;
-    }
-    else{ //qui n è maggiore di 1
-        nodo*y=tagliaric(L->next,n-1);
-        nodo*z=L;
-        L=L->next;
-        z->next=y;
-        return z;
-    }
-}*/
 
-            
 nodo* tagliaric(nodo*& L, int n){ //ricorsiva
     if(!n || !L) return 0;
     nodo* temp = L;
@@ -125,41 +62,41 @@ nodo* tagliaric(nodo*& L, int n){ //ricorsiva
     d = tagliaric(L,n-1);
     return concric(temp,d);
 }
-            //* METODO DEL PROF *//
 
-/*void Fiter(nodo*L, nodoD* D, nodo*& lasciati, nodo*& tolti){
-    lasciati=0, tolti=0;
-    while(L && D){
-        nodo*x=taglia(L, D->lascia);
-        nodo*y=taglia(L, D->tolti);
-        lasciati=conc(lasciati,x);
-        tolti=conc(tolti,y);
-        D=D->next;
-    }
-    lasciati=conc(lasciati,L);
-}*/
-
-void Fiter(nodo*L, nodoD* D, nodo*& lasciati, nodo*& tolti){ //iterattiva
-    while(L && D){
-        lasciati = conc(lasciati,taglia(L,D->lascia));
-        tolti = conc(tolti,taglia(L,D->togli));
-        D = D->next;
-    }
-    lasciati = conc(lasciati,L);
+nodo* conc(nodo* L1, nodo* L2){
+  if(L1){
+    nodo* current = L1;
+    while(current->next) current = current->next;
+    current->next = L2;
+    return L1;
+  } else return L2;
 }
 
-            //* METODO DEL PROF *//
-            
-/*doppioN Fric(nodo* L,nodoD*D){
-    if(!L || !D) return doppioN(L);
-    else{
-        nodo*l=tagliaric(L,D->lascia);
-        nodo*t=tagliaric(L,D->togli);
-        doppioN z=Fric(L,D->next);
-        return doppioN(concric(l,z.La), concric(t.z.To));
+nodo* trim(nodo*&L, int k){
+  if(!k) return 0;
+  nodo* start = L;
+  for(int i=0; i<k-1 && L->next; i++){
+    L=L->next;
+  }
+  nodo* tmp = L;
+  L=L->next;
+  tmp->next = 0;
+  return start;
+}
+
+void Fiter(nodo*L, nodoD* D, nodo*& lasciati, nodo*& tolti){ //iterattiva
+    while(L){
+      if(D){
+        lasciati = conc(lasciati,trim(L,D->lascia));
+        tolti = conc(tolti,trim(L,D->togli));
+        D = D->next;
+      } else {
+        lasciati = conc(lasciati,L);
+        L=0;
+      }
     }
-}*/
- 
+}
+
 doppioN Fric(nodo* L,nodoD*D){
     doppioN doppialista = 0;
     if(!D){

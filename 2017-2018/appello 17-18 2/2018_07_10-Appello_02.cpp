@@ -56,41 +56,45 @@ nodo* clone(nodo*L)
 
 nodo* distr_ric(nodo *&L, int* A, int dimA, int n){
   if(!L) return NULL;
-    if(dimA){
-      if(!((*A)-n)){
-      nodo* tmp=L;
-      L=L->next;
-      tmp->next=distr_ric(L,A+1,dimA-1,n+1);
-      return tmp;
-      } else {
-        return distr_ric(L->next,A,dimA,n+1);
-      }
+  if(dimA){
+    if(*A == n){
+    nodo* tmp=L;
+    L=L->next;
+    tmp->next=distr_ric(L,A+1,dimA-1,n+1);
+    return tmp;
+    } else {
+      return distr_ric(L->next,A,dimA,n+1);
     }
-    return NULL;
+  }
+  return NULL;
 }
 
 nodo* distr_iter(nodo* &L, int* A, int dimA){
   coda to_return, to_del;
   nodo* current = L;
-  while(dimA && current){
-    while(A[0] && current){
-      nodo*tmp = current->next;
-      to_del = push_end(to_del,current);
-      current = tmp;
-      for(int i=0; i<dimA; i++)
-        A[i]--;
+  for(int i=0; dimA && current; i++){
+    nodo * tmp = current;
+    current = current->next;
+    tmp->next = 0;
+    if(i == *A){
+      to_del = push_end(to_del,tmp);
+      A++;
+      dimA--;
+    } else {
+      to_return = push_end(to_return,tmp);
     }
-    if(current){
-      nodo* tmp= current->next;
-      current->next = 0;
-      to_return = push_end(to_return, current);
-      current = tmp;
-    }
-    A++;
-    dimA--;
   }
-  L = to_del.primo;
-  return to_return.primo;
+
+  while (current)
+  {
+    nodo* tmp = current;
+    current = current->next;
+    to_return = push_end(to_return,tmp);
+  }
+  
+
+  L = to_return.primo;
+  return to_del.primo;
 }
 
 main()

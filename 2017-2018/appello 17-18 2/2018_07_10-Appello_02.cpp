@@ -69,35 +69,59 @@ nodo* distr_ric(nodo *&L, int* A, int dimA, int n){
   return NULL;
 }
 
+//PRE_f = L ben formata, A array con dimA elementi definiti non negativi e crescenti dimA>0, vL = L
 nodo* distr_iter(nodo* &L, int* A, int dimA){
-  coda to_return, to_del;
+  coda to_del, resto;
   nodo* current = L;
-  for(int i=0; dimA && current; i++){
+  //PRE_for = PRE_f && resto e to_del code ben formate e vuote, L(current) = L = vL && vA = A, vdimA = dimA
+  for(int i=0; current; i++)
+  //R = dimA >= 0, L(current) ben formata, all'iterazione i-esima staccati i primi i nodi, ognuno inserito
+  //    in resto se il suo indice (i) non è in A, inserito in to_del se il suo indice (i) è in vA
+  {
     nodo * tmp = current;
     current = current->next;
     tmp->next = 0;
-    if(i == *A){
-      to_del = push_end(to_del,tmp);
-      A++;
-      dimA--;
+    if(dimA){
+      if(i == *A){
+        to_del = push_end(to_del,tmp);
+        A++;
+        dimA--;
+      } else {
+        resto = push_end(resto,tmp);
+      }
     } else {
-      to_return = push_end(to_return,tmp);
+      resto = push_end(resto, tmp);
     }
   }
+  //POST_for = tutti i nodi di indice valido (i < len(vL)) sono stati inseriti in to_del, resto contiene i nodi il cui indice non è presente in A
 
-  while (current)
-  {
-    nodo* tmp = current;
-    current = current->next;
-    to_return = push_end(to_return,tmp);
-  }
-  
-
-  L = to_return.primo;
+  L = resto.primo;
   return to_del.primo;
 }
+//POST_f = Restituisce L1 la lista dei nodi di vL i cui indici sono in A, mentre L diventa L2 la lista dei nodi
+//       i cui indici non sono in A entrambe mantengono l'ordine relatvo che avevano in vL
 
-main()
+
+/*
+Dim for e while di distr_iter
+for:
+condizione iniziale:
+  PRE_f => dimA > 0 && (i=0, => iterazione 0, staccati 0 nodi) => R
+
+invarianza:
+  R && dimA && current => (dimA>0) && (L(current) non vuota) && staccati i primi i nodi di vL e inseriti in resto o to_del a seconda
+  che il loro indice appaia o meno in vA => dimA>=0, L(current) ben formata, staccati .. => R
+
+uscita:
+  R && !(current)
+    => vL percorsa interamente, per invarianza ogni nodo è stato inserito o in to_del o in resto a seconda che il suo indice ci fosse o meno in A
+    => to_del contiene i nodi il cui indice è in A, resto contiene i nodi il cui indice non è in A
+
+ritorno:
+  L = resto.primo && return to_del.primo => POST_f
+ */
+
+int main()
 {
   int  n,m;
   cout<<"start"<<endl;
@@ -117,4 +141,5 @@ main()
   stampa_lista(L1);
   
   cout<<"end"<<endl;
+  return 0;
 }

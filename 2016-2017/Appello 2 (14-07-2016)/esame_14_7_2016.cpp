@@ -65,10 +65,11 @@ nodo* presente(nodo* n, int y){
  
 bool presente_iter(nodo* n, int y){
     bool b=false;
-    while(n!=0 && !b){
+    while(n && !b){
         if(n->info==y){
             b=true;
         }
+        n=n->next;
     }
     return b;
 }
@@ -112,37 +113,51 @@ Inoltre restituisce un valore FIFO f tale che f.primo è la lista dei nodi elimi
 nello stesso ordine relativo che essi hanno in vL(Q->next))
 */
 
+int len(nodo* L){
+    int c = 0;
+    while(L){
+        c++;
+        L=L->next;
+    }
+    return c;
+}
+
 //PRE=(L(Q) è una lista corretta e vL(Q)=L(Q))
 FIFO tieni_ultimo_iter(nodo*& Q){
-    //bool b=true;
-    FIFO r;
-    FIFO f;
-    nodo *n=Q;
-    nodo*x;
-    
-    while(n!=0){
-        nodo *p=presente(n->next, n->info);
-        if(p!=0){//allora q e' un duplicato
-            nodo *a=n;
-            n=n->next;
-            a->next=0;
-            r=push_end(r,a);
-        }else{// non e' un duplicato
-            nodo *j=n;
-            n=n->next;
-            j->next=0;
-            f=push_end(f,j);
-            
+    FIFO to_return, to_del;
+    int leng = len(Q);
+    nodo **L = new nodo*[leng];
+    nodo* current = Q;
+    for(int i=0; current; i++){
+        L[i] = current;
+        current = current->next;
+    }
+    for(int i=0; i<leng; i++){
+        nodo* tmp = L[leng-1-i];
+        tmp->next = 0;
+        if(presente_iter(to_return.primo,tmp->info)){
+            to_del = push_begin(to_del,tmp);
+        } else {
+            to_return = push_begin(to_return, tmp);
         }
     }
-    Q=f.primo;
-    return r;
+
+    Q = to_return.primo;
+    return to_del;
 }
 /*
 POST=(L(Q) è ottenuta da vL(Q) eliminando i nodi con info ripetuto mantenendo solo l'ultimo
 nodo per ciascun campo info e mantenendo l'ordine relativo che questi nodi hanno in vL(Q).
 Inoltre restituisce un valore FIFO f tale che f.primo è la lista dei nodi eliminati
 nello stesso ordine relativo che essi hanno in vL(Q))
+
+Soluzione "al contrario"
+anche se in realtà leggibile e semplice da dimostrare
+dato che inizia dall'ultimo nodo della lista costruendo la pila delle chiamate di una soluzione ricorsiva
+metterei
+R = (0<=i<=len(Q) dove len(Q) è la lunghezza di Q) && (all'iterazione i-esima inseriti gli ultimi i nodi di Q
+     in to_del o to_return che questi appaiano o meno (rispettivamente) almeno una volta all'interno di to_return)
+Così la dimostrazione risulta semplice
 */
 
 

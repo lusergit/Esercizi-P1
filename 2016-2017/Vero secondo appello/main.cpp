@@ -84,7 +84,7 @@ nodo* trim(nodo*&L, int k){
   return start;
 }
 
-void Fiter(nodo*L, nodoD* D, nodo*& lasciati, nodo*& tolti){ //iterattiva
+void Fiter(nodo*L, nodoD* D, nodo*& lasciati, nodo*& tolti){ //iterativa
     while(L){
       if(D){
         lasciati = conc(lasciati,trim(L,D->lascia));

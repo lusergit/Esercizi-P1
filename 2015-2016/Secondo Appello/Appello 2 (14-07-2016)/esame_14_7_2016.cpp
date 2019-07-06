@@ -128,14 +128,16 @@ nello stesso ordine relativo che essi hanno in vL(Q->next))
 */
 
 //PRE=(L(Q) è una lista corretta e vL(Q)=L(Q))
-FIFO tieni_ultimo_iter(nodo*& Q) {
+FIFO tieni_ultimo_iter(nodo*& Q) 
+//R = L(current) ben formata && all'n-esimo ciclo staccato l'n-esimo nodo di vL(Q) e inserito in resto se questo è l'ultimo col proprio campo info
+//    Inserito in to_return altrimenti
+{
 	FIFO to_return, resto;
-	nodo* current = Q;
-	while (current) {
-		nodo* tmp = current;
-		current = current->next;
+	while (Q) {
+		nodo* tmp = Q;
+		Q = Q->next;
 		tmp->next = 0;
-		if (presente_iter(current, tmp->info)) {
+		if (presente_iter(Q, tmp->info)) {
 			resto = push_end(resto, tmp);
 		}
 		else {
@@ -153,6 +155,28 @@ Inoltre restituisce un valore FIFO f tale che f.primo � la lista dei nodi elim
 nello stesso ordine relativo che essi hanno in vL(Q))
 */
 
+/*
+Dim tieni_ultimo_iter:
+PRE_while = PRE_f && to_return, resto code ben formate e vuote, L(current) = L(Q)
+PRE_while =>  L(Q) ben formata && eseguiti 0 cicli => R
+
+invarinaza:
+	L(Q) && Q => Q non vuota => Q->next ben formata
+	nell'esecuzione del ciclo:
+	//viene staccato il primo nodo di L(Q) e viene puntato da tmp, Q=Q->next ben formata per guardia
+	//PRE_presente = Q ben formata, tmp->info definito
+	if(presente(Q,tmp->info))
+	//POST_presente = ritorna 0 sse tmp->info non è presente in nessun altro nodo successivo a quello appena staccato in vL(Q)
+	{ //inserisce tmp in resto, dato che in Q è presente un altro nodo con campo info = tmp->info }
+	else //inserisce tmp in to_return
+	=> nel ciclo eseguito eseguite le operazioni defnite nell'invariante
+	=> R && guardia => R
+	
+terminazione:
+	R && !current => percorsa tutta la lista => POST_while
+	
+	POST_while && Q=resto.primo, return to_return.primo => POST_f
+*/
 
 /*
 ESERCIZIO TEORIA

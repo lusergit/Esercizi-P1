@@ -36,6 +36,7 @@ void stampa(nodo*L)
 
 //PRE = L lista ben formata e non vuota, formata da k_nodi@resto
 nodo* trim(nodo*& L, int k){
+  if(!k) return 0;
   nodo* to_return = L, * current = L;
   for(int i=0; i<k-1 && current; i++){
     current = current->next;
@@ -64,6 +65,7 @@ void conc(nodo * &L1, nodo * L2){
 }
 //POST = forma (L1 = L1@L2)
 
+//PRE = L, L1, L2 ben formate, A vettore di dimA elementi con dimA pari, vL1=L1, vL2=L2, vL=L,
 void Fiter(nodo* L, int * A, int dimA, nodo*& L1, nodo*& L2){
   for(int i=0; i<dimA && L; i++){
     nodo* current = trim(L,A[i]);
@@ -71,7 +73,9 @@ void Fiter(nodo* L, int * A, int dimA, nodo*& L1, nodo*& L2){
       conc(L2,current);
     } else conc(L1,current);
   }
+  conc(L1,L);
 }
+//POST = i nodi di vL sono distribuiti correttamente su due liste X1 e X2 secondo i valor di A && L1=vL1@X1, L2=vL2@X2
 
 main()
 {

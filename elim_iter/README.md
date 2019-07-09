@@ -6,11 +6,11 @@ trattare casi come l'eliminazione della radice a parte.
 In pratica Questo main si è trasformato più in un esercizio volto a capire meglio come percorrere un albero con la struttura ausiliaria 
   ```c++
 elem{
-  int momento;
-  nodo* r;
-  elem(..){
-    ..
-  }
+    int momento;
+    nodo* r;
+    elem(..){
+      ..
+    }
 };
 ```
   Descitta in clsse, tramite una pila `elem pila[] = new elem[altezza(r)+1]` è facile percorrere un albero binaro qualsiasi simulando 

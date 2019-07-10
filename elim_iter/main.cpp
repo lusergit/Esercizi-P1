@@ -11,12 +11,6 @@ struct nodo{
     }
 };
 
-nodo* buildTree(int n){
-    if(!n) return NULL;
-    int x; cin >> x;
-    return new nodo(x,buildTree(n-1),buildTree(n-1));
-}
-
 int altezza(nodo* r){
     if(!r) return 0;
     return 1+altezza(r->left)+altezza(r->right);
@@ -30,6 +24,44 @@ struct elem{
         N=b;
     }
 };
+
+//PRE = r albero ben formatoe in formato BST
+nodo* elim(nodo* r){
+    nodo* to_return = 0;
+    if(r){
+        if(!r->left && !r->right){
+            delete r;
+        } else {
+            if(r->left){
+                if(r->right){
+                    nodo* to_del = r->right;
+                    if(to_del->left){
+                        while(to_del->left->left) to_del = to_del->left;
+                        nodo* tmp = to_del->left;
+                        to_del->left = 0;
+                        r->info = tmp->info;
+                        delete tmp;
+                    } else {
+                        r->right = to_del->right;
+                        delete to_del;
+                    }
+
+                    to_return = r;
+                } else {
+                    to_return = r->left;
+                    delete r;
+                }
+            } else {
+                to_return = r->right;
+                delete r;
+            }
+        }
+    }
+    return to_return;
+}
+/*POST = elimina radice dell'albero se questa manca di un nodo figlio o più, se ha entrambi i figli
+         il campo info della radice viene sostituito con quello del nodo più a sinistra del sottoalbero destro
+         e ritorna il nuovo albero ben formato*/
 
 //PRE = r albeo ben formato
 void stampa(nodo* r){
@@ -111,14 +143,12 @@ nodo* da_eliminare(nodo* r, int x){
     return trovato;
 }
 
-void elim(nodo* r, int x){
+nodo* Felim(nodo* r, int x){
     nodo* da_elim = da_eliminare(r,x);
-    if(!da_elim) return;
-    if(da_elim->left && da_elim->right){
-        elim_in_mezzo(da_elim);
-    }
-    else {
-        if(da_elim->left)
+    if(da_elim == r){
+        return elim(r);
+    } else {
+        da_elim
     }
 }
 

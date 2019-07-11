@@ -1,6 +1,6 @@
 #include<iostream>
 using namespace std;
-#include<fstream>
+
 struct nodo{int info; nodo* next; nodo(int a=0, nodo* b=0){info=a; next=b;}}; // nodo di lista 
 struct FIFO{nodo* primo, *ultimo;FIFO(nodo*a=0, nodo*b=0){primo=a; ultimo=b;}};
 struct nodot{int info; nodot* left, *right; nodot(int a=0, nodot* b=0, nodot* c=0){info=a; left=b; right=c;}};//nodo di albero
@@ -13,57 +13,6 @@ FIFO push_end(FIFO a, nodo*b)
    {a.ultimo->next=b; a.ultimo=b;}
   return a;
 }
-
-//esercizio 1 con push_end
-FIFO concF(FIFO a, FIFO b){
-  if(b.primo){
-    a=push_end(a, b.primo);
-    a.ultimo=b.ultimo;
-  }
-  return a;
-}
-
-//esercizio 2
-FIFO pickric_infix(nodot*R, int &n, int k)
-{
-  FIFO lista; //definisco una lista FIFO vuota
-  if(R == 0) //se il nodo R è 0
-    return lista; //restituisco lista
-    
-  FIFO a = pickric_infix(R->left, n, k); 
-  if(n==k){
-    a=push_end(a,new nodo(R->info));
-    n=1;
-    }
-    else
-    n++;
-    
-  FIFO b = pickric_infix(R->right, n, k);
-  return concF(a, b);
-}
-
-//esercizio 3
-FIFO tieni_primo(nodo*& Q) {
-  FIFO tolti;
-  nodo *partenza = Q, *padre = Q, *figlio = Q; //definisco tre tipi di nodi che inizialmente corrispondono tutti a Q
-    while(partenza) { //se la partenza non è 0
-        padre=partenza; //il padre diventa la partenza
-        figlio = partenza->next; //il figlio diventa il nodo dopo la partenza
-        while(figlio) { //se il figlio non è zero
-            if(figlio->info == partenza->info) { //se info figlio è uguale a info partenza
-                padre->next = figlio->next; //il nodo dopo il figlio diventa il nodo dopo il padre
-                figlio->next = 0; //il figlio non è più linkato a qualcos'altro
-                tolti = push_end(tolti, figlio); //metto il figlio in fondo a tolti
-                figlio = padre; //il figlio diventa il padre
-            }
-            padre = figlio; //il padre diventa il figlio
-            figlio = figlio->next; //il figlio diventa il nodo dopo
-        }
-        partenza = partenza->next;
-    }
-    return tolti;
-}
-
 
 
 int conta_n(nodot*r)
@@ -113,6 +62,102 @@ void stampa(nodot *r)
     cout<< '_';
 }
 
+FIFO concF(FIFO a, FIFO b){
+    if (!a.primo) return b;
+    if (!b.primo) return a;
+    a.ultimo->next = b.primo;
+    a.ultimo = b.ultimo;
+    return a;
+}
+
+/* Farò tutti iterativo perchè mi sto preparando per la parte iterativa dell'appello nell'a.a. 2018-2019 */
+struct elem{
+  nodot* r;
+  int mom;
+  elem(int a=0, nodot* b=0){
+      r = b;
+      mom = a;
+  }
+};
+
+int altezza(nodot* r){
+    if(!r) return 0;
+    return 1+max(altezza(r->left),altezza(r->right));
+}
+
+FIFO pickiter_infix(nodot* R, int& n, int k){
+    FIFO to_return;
+    elem *pila = new elem[altezza(R)+1];
+    int top = 0;
+    if(R){
+        pila[top] = elem(0,R);
+        top++;
+    }
+    while(top){
+        switch(pila[top-1].mom){
+            case 0:
+                if(!pila[top-1].r){
+                    top--;
+                } else {
+                    pila[top-1].mom++;
+                    pila[top] = elem(0,pila[top-1].r->left);
+                    top++;
+                }
+                break;
+                
+            case 1:
+                if(n == k){
+                    to_return = push_end(to_return, new nodo(pila[top-1].r->info));
+                    n = 1;
+                } else n++;
+                pila[top-1].mom++;
+                pila[top] = elem(0,pila[top-1].r->right);
+                top++;
+                break;
+                
+            case 2:
+                top--;
+                break;
+        }
+    }
+    
+    return to_return;
+}
+
+bool presente(nodo* L, int n){
+    bool pres = false;
+    while(L && !pres){
+        if(L->info == n) pres = true;
+        L = L->next;
+    }
+    return pres;
+}
+
+FIFO tieni_primo(nodo*& Q){
+    
+    FIFO ripetuti, primi;
+    while(Q){
+        nodo* current = Q;
+        Q = Q->next;
+        current->next = 0;
+        primi = push_end(primi, current);
+        FIFO uguali, resto;
+        while(Q){
+            current = Q;
+            Q = Q->next;
+            current->next = 0;
+            if(current->info == primi.ultimo->info){
+                uguali = push_end(uguali,current);
+            } else resto = push_end(resto, current);
+        }
+        ripetuti = concF(ripetuti,uguali);
+        Q = resto.primo;
+    }
+    
+    Q = primi.primo;
+    return ripetuti;
+}
+
  main()
 {
   int test,n_el, k, n=1;
@@ -121,7 +166,7 @@ void stampa(nodot *r)
  nodot* R=build_tree(0,n_el);
  cout<<"albero:"<<endl;
  stampa(R);
- FIFO x=pickric_infix(R,n,k);
+ FIFO x=pickiter_infix(R,n,k);
  cout<<endl<<"lista creata:"<<endl;
  stampa_lista(x.primo);
  if(test>0)

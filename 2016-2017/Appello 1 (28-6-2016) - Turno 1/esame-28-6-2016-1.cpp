@@ -124,6 +124,8 @@ FIFO pickiter_infix(nodot* R, int& n, int k){
     return to_return;
 }
 
+/*
+//Funzione non necessaria davvero
 bool presente(nodo* L, int n){
     bool pres = false;
     while(L && !pres){
@@ -132,6 +134,7 @@ bool presente(nodo* L, int n){
     }
     return pres;
 }
+*/
 
 FIFO tieni_primo(nodo*& Q){
     

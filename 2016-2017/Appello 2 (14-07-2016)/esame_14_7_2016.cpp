@@ -1,13 +1,9 @@
 #include<iostream>
 using namespace std;
-#include<fstream>
+
 struct nodo{int info; nodo* next; nodo(int a=0, nodo* b=0){info=a; next=b;}}; // nodo di lista 
 struct FIFO{nodo* primo, *ultimo;FIFO(nodo*a=0, nodo*b=0){primo=a; ultimo=b;}};
 struct nodot{int info; nodot* left, *right; nodot(int a=0, nodot* b=0, nodot* c=0){info=a; left=b; right=c;}};//nodo di albero
-
-
-
-
 FIFO push_end(FIFO a, nodo*b)
 {
   if(!a.primo)
@@ -31,143 +27,81 @@ nodo* costruisci(int dim)
    {int x; cin>>x; return new nodo(x,costruisci(dim-1));}
  return 0;
 }
- nodo* clone(nodo*a)
+
+nodo* clone(nodo*a)
  {
   if(a)
   {return new nodo(a->info, clone(a->next));}
   return 0;
  }
  
- //*****************************************
- 
- FIFO  push_begin(FIFO x, nodo* b){
-    if(x.primo==0 && x.ultimo==0){
-        x.primo=b;
-        x.ultimo=b;
-    }else{
-        b->next=x.primo;
-        x.primo=b;
+FIFO push_begin(FIFO Q, nodo* L){
+    if(!Q.primo){
+        Q.primo = Q.ultimo = L;
+    } else {
+        L->next = Q.primo;
+        Q.primo = L;
     }
-    return x;
- }
- 
-nodo* presente(nodo* n, int y){
-    if(n==0){
-        return 0;
-    }else{
-        if(n->info==y){
-            return n;
-        }else{
-           return presente(n->next, y); 
-        }
-    }
+    return Q;
 }
  
-bool presente_iter(nodo* n, int y){
-    bool b=false;
-    while(n && !b){
-        if(n->info==y){
-            b=true;
-        }
-        n=n->next;
-    }
-    return b;
+bool e_ultimo(nodo*L, int x){
+    if(!L) return true;
+    if(L->info == x) return false;
+    return e_ultimo(L->next,x);
 }
  
-//PRE=(L(Q) è una lista corretta e vL(Q)=L(Q))
-FIFO tieni_ultimo_ric(nodo*&Q){
-    FIFO r;
-    //caso base la lista e' vuota
-    if(Q==0){//CB1
-        return FIFO();//la lista dei nodi ripetuti su una lista vuota e' anche essa vuota
-    }else{
-        //caso ricorsivo
-        r=tieni_ultimo_ric(Q->next);
-        nodo *p=presente(Q->next, Q->info);//CR1
-        if(p!=0){//allora q e' un duplicato
-            nodo *a=Q;
-            Q=Q->next;
-            a->next=0;
-            r=push_begin(r,a);
-            
-        }
-        //r=push_end(r,0);
-       return r;
+FIFO tieni_ultimo_ric(nodo*&L){
+    FIFO lista;
+    if(!L) return lista;
+    if(!e_ultimo(L->next,L->info)){
+        nodo* tmp = L;
+        L=L->next;
+        tmp->next = NULL;
+        lista = tieni_ultimo_ric(L);
+        lista = push_begin(lista,tmp);
+        return lista;
+    } else {
+        lista = tieni_ultimo_ric(L->next);
+        return lista;
     }
 }
-/*
-POST=(L(Q) è ottenuta da vL(Q) eliminando i nodi con info ripetuto mantenendo solo l'ultimo
-nodo per ciascun campo info e mantenendo l'ordine relativo che questi nodi hanno in vL(Q).
-Inoltre restituisce un valore FIFO f tale che f.primo è la lista dei nodi eliminati
-nello stesso ordine relativo che essi hanno in vL(Q))
-*/
 
-/*
-PROVA INDUTTIVA
-CB1) se la lista e' vuota di duplicati di una lista vuota non ce ne sono
-CR1) se il nodo non e' vuoto effettuo la ricorsione
-pre-ric=(L(Q->next) è una lista corretta e vL(Q->next)=L(Q->next))
-POST-ric=(L(Q->next) è ottenuta da vL(Q->next) eliminando i nodi con info ripetuto mantenendo solo l'ultimo
-nodo per ciascun campo info e mantenendo l'ordine relativo che questi nodi hanno in vL(Q->next).
-Inoltre restituisce un valore FIFO f tale che f.primo è la lista dei nodi eliminati
-nello stesso ordine relativo che essi hanno in vL(Q->next))
-*/
-
-int len(nodo* L){
-    int c = 0;
+//PRE = L ben formata
+int len(nodo * L){
+    int count = 0;
     while(L){
-        c++;
+        count++;
+        L = L->next;
+    }
+    return count;
+}
+//POST = ritorna numero di nodi della lista
+
+bool presente(nodo* L, int n){
+    bool trovato = false;
+    while(L && !trovato){
+        if(L->info == n) trovato = true;
         L=L->next;
     }
-    return c;
+    return trovato;
 }
 
-//PRE=(L(Q) è una lista corretta e vL(Q)=L(Q))
-FIFO tieni_ultimo_iter(nodo*& Q){
-    FIFO to_return, to_del;
-    int leng = len(Q);
-    nodo **L = new nodo*[leng];
-    nodo* current = Q;
-    for(int i=0; current; i++){
-        L[i] = current;
-        current = current->next;
-    }
-    for(int i=0; i<leng; i++){
-        nodo* tmp = L[leng-1-i];
-        tmp->next = 0;
-        if(presente_iter(to_return.primo,tmp->info)){
-            to_del = push_begin(to_del,tmp);
+FIFO tieni_ultimo_iter(nodo*&L){
+    FIFO ultimi, resto;
+    while(L){
+        nodo* current = L;
+        L=L->next;
+        current->next = 0;
+        if(presente(L,current->info)){
+            resto = push_end(resto, current);
         } else {
-            to_return = push_begin(to_return, tmp);
+            ultimi = push_end(ultimi, current);
         }
     }
-
-    Q = to_return.primo;
-    return to_del;
+    L = ultimi.primo;
+    return resto;
 }
-/*
-POST=(L(Q) è ottenuta da vL(Q) eliminando i nodi con info ripetuto mantenendo solo l'ultimo
-nodo per ciascun campo info e mantenendo l'ordine relativo che questi nodi hanno in vL(Q).
-Inoltre restituisce un valore FIFO f tale che f.primo è la lista dei nodi eliminati
-nello stesso ordine relativo che essi hanno in vL(Q))
-
-Soluzione "al contrario"
-anche se in realtà leggibile e semplice da dimostrare
-dato che inizia dall'ultimo nodo della lista costruendo la pila delle chiamate di una soluzione ricorsiva
-metterei
-R = (0<=i<=len(Q) dove len(Q) è la lunghezza di Q) && (all'iterazione i-esima inseriti gli ultimi i nodi di Q
-     in to_del o to_return che questi appaiano o meno (rispettivamente) almeno una volta all'interno di to_return)
-Così la dimostrazione risulta semplice
-*/
-
-
-/*
-ESERCIZIO TEORIA
-PRE=(l' albero che ricevo e' corretto e non vuoto)
-POST=(restituisce il numeo di nodi con un solo figlio successivi al nodo radice dato)
-*/
-
- //*****************************************
  
 main()
 {

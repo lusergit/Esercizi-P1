@@ -21,15 +21,17 @@ struct nodoL{
 
 //PRE = nL ben formata, k intero non negativo, vL = L
 nodo* trim(nodo*&L, int k){
-    if(!k) return NULL;
-    nodo *current = L, *start = L;
-    while(k-1){
-        current = current->next;
+    if(!k || !L) return NULL;
+    nodo* start = L;
+    while(L && k-1){
         k--;
+        L = L->next;
     }
-    nodo* tmp = current->next;
-    current->next = 0;
-    L = tmp;
+    if(L){
+        nodo *tmp = L->next;
+        L->next = 0;
+        L = tmp;
+    }
     return start;
 }
 //POST = ritorna lista formata dai primi k nodi di L, L contiene il resto della lista;

@@ -1,4 +1,4 @@
-# Esercizi-P1
+# Esercizi-P1 - Closed
 
 Raccolta di esercizi svolti durante il corso di Programmazione 1 presso l'Università degli studi di Padova
 
@@ -8,3 +8,6 @@ Le tracce spesso non ci sono, gli appunti sono stati realizzati con [Xournalpp](
 
 ## Perchè
 La seguente repo in realtà serve a me per tenere traccia dei progressi effettuati, nulla più, per questo è tutto molto disorganizzato e spesso le soluzioni non sono efficenti/complete 😎
+
+## Terminato
+Esame svolto
